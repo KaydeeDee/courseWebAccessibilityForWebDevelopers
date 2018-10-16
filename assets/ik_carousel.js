@@ -2,16 +2,17 @@
 	
 	var pluginName = 'ik_carousel',
 		defaults = { // default settings
-			'animationSpeed' : 3000
+			'animationSpeed' : 3000,
+			'instructions': 'Carousel widget. Use left and reight arrows to navigate between slides.'
 		};
 	 
-	/**
-	 * @constructs Plugin
-	 * @param {Object} element - Current DOM element from selected collection.
-	 * @param {Object} options - Configuration options.
-	 * @param {string} options.instructions - Custom instructions for screen reader users.
-	 * @param {number} options.animationSpeed - Slide transition speed in milliseconds.
-	 */
+	// /**
+	//  * @constructs Plugin
+	//  * @param {Object} element - Current DOM element from selected collection.
+	//  * @param {Object} options - Configuration options.
+	//  * @param {string} options.instructions - Custom instructions for screen reader users.
+	//  * @param {number} options.animationSpeed - Slide transition speed in milliseconds.
+	//  */
 	function Plugin( element, options ) {
 		
 		this._name = pluginName;
@@ -34,14 +35,20 @@
 		
 		$elem
 			.attr({
-				'id': id
+				'id': id,
+				'role': 'region', // assign region role
+				'tabindex': 0, // add into the tab order
+				'aria-describedby': id + '_instructions' // associate with instructions
 			})
 			.addClass('ik_carousel')
+			.on('keydown', { 'plugin': plugin }, plugin.onKeyDown)
 			.on('mouseenter', {'plugin': plugin}, plugin.stopTimer)
 			.on('mouseleave', {'plugin': plugin}, plugin.startTimer)
 		
 		$controls = $('<div/>')
-
+			.attr({
+				'aria-hidden': 'true' // hide controls from screen readers
+			})
 			.addClass('ik_controls')
 			.appendTo($elem);
 				
@@ -66,6 +73,10 @@
 				
 				$me = $(el);
 				$src = $me.find('img').remove().attr('src');
+
+				$me.attr({
+					'aria-hidden': 'true' // hide controls from screen readers
+				})
 				
 				$me.css({
 						'background-image': 'url(' + $src + ')'
@@ -75,6 +86,15 @@
 					.on('click', {'plugin': plugin, 'slide': i}, plugin.gotoSlide)
 					.appendTo($navbar);
 			});
+
+		$('<div/>') // add instructions for screen reader users
+			.attr({
+				'id': id + '_instructions',
+				'aria-hidden': 'true'
+			})
+			.text(this.options.instructions)
+			.addClass('ik_readersonly')
+			.appendTo($elem);
 		
 		plugin.navbuttons = $navbar.children('li');
 		plugin.slides.first().addClass('active');
@@ -83,12 +103,12 @@
 		
 	};
 	
-	/** 
-	 * Starts carousel timer. 
-	 * Reference to plugin must be passed with event data.
-	 * 
-	 * @param {Object} event - Mouse or focus event.
-	 */
+	// /** 
+	//  * Starts carousel timer. 
+	//  * Reference to plugin must be passed with event data.
+	//  * 
+	//  * @param {Object} event - Mouse or focus event.
+	//  */
 	Plugin.prototype.startTimer = function (event) {
 		
 		var plugin;
@@ -105,14 +125,22 @@
 		
 	};
 	
-	/** 
-	 * Stops carousel timer. 
-	 * 
-	 * @param {object} event - Mouse or focus event.
-	 * @param {object} event.data - Event data.
-	 * @param {object} event.data.plugin - Reference to plugin.
-	 */
+	// /** 
+	//  * Stops carousel timer. 
+	//  * 
+	//  * @param {object} event - Mouse or focus event.
+	//  * @param {object} event.data - Event data.
+	//  * @param {object} event.data.plugin - Reference to plugin.
+	//  */
 	Plugin.prototype.stopTimer = function (event) {
+
+		if (event.type === 'focusin') {
+			plugin.element.attr({ 'aria-live': 'polite' });
+		}
+
+		if (event.type === 'focusout') {
+			plugin.element.removeAttr('aria-live');
+		}
 		
 		var plugin = event.data.plugin;
 		clearInterval(plugin.timer);
@@ -120,14 +148,14 @@
 		
 	};
 	
-	/** 
-	 * Goes to specified slide. 
-	 * 
-	 * @param {object} event - Mouse or focus event.
-	 * @param {object} event.data - Event data.
-	 * @param {object} event.data.plugin - Reference to plugin.
-	 * @param {number} event.data.slide - Index of the slide to show.
-	 */
+	// /** 
+	//  * Goes to specified slide. 
+	//  * 
+	//  * @param {object} event - Mouse or focus event.
+	//  * @param {object} event.data - Event data.
+	//  * @param {object} event.data.plugin - Reference to plugin.
+	//  * @param {number} event.data.slide - Index of the slide to show.
+	//  */
 	Plugin.prototype.gotoSlide = function (event) {
 		
 		var plugin, n, $elem, $active, $next, index, direction, transevent;
@@ -166,10 +194,18 @@
 			next = event.data.next;
 			dir = event.data.dir;
 			
-			active.off( ik_utils.getTransitionEventName() )
+			active
+				.attr({
+					'aria-hidden': 'true'
+				})
+				.off( ik_utils.getTransitionEventName() )
 				.removeClass(direction + ' active');
 				
-			next.removeClass('next')
+			next
+				.attr({
+					'aria-hidden': 'false'
+				})
+				.removeClass('next')
 				.addClass('active');
 			
 		});
@@ -189,6 +225,33 @@
 			
 		});
 		
+	}
+
+// 	/**
+// * Handles keydown event on the next/prev links.
+// *
+// * @param {Object} event - Keyboard event.
+// * @param {object} event.data - Event data.
+// * @param {object} event.data.plugin - Reference to plugin.
+// */
+	Plugin.prototype.onKeyDown = function (event) {
+
+		var plugin = event.data.plugin;
+
+		switch (event.keyCode) {
+
+			case ik_utils.keys.left:
+				event.data = { 'plugin': plugin, 'slide': 'left' };
+				plugin.gotoSlide(event);
+				break;
+			case ik_utils.keys.right:
+				event.data = { 'plugin': plugin, 'slide': 'right' };
+				plugin.gotoSlide(event);
+				break;
+			case ik_utils.keys.esc:
+				plugin.element.blur();
+				break;
+		}
 	}
 	
 })( jQuery, window, document );

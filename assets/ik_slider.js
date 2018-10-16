@@ -9,16 +9,16 @@
 			'step': 1
 		};
 	 
-	/**
-	 * @constructs Plugin
-	 * @param {Object} element - Current DOM element from selected collection.
-	 * @param {Object} options - Configuration options.
-	 * @param {string} options.instructions - Custom instructions for screen reader users.
-	 * @param {number} options.minValue - Slider minimum value.
-	 * @param {number} options.maxValue - Slider maximum value.
-	 * @param {number} options.nowValue - Slider current value.
-	 * @param {number} options.step - Slider increment value.
-	 */
+	// /**
+	//  * @constructs Plugin
+	//  * @param {Object} element - Current DOM element from selected collection.
+	//  * @param {Object} options - Configuration options.
+	//  * @param {string} options.instructions - Custom instructions for screen reader users.
+	//  * @param {number} options.minValue - Slider minimum value.
+	//  * @param {number} options.maxValue - Slider maximum value.
+	//  * @param {number} options.nowValue - Slider current value.
+	//  * @param {number} options.step - Slider increment value.
+	//  */
 
 	function Plugin( element, options ) {
 		
@@ -98,11 +98,12 @@
 					
 	};
 	
-	/** 
-	 * Sets current value. 
-	 * 
-	 * @param {number} n - Current value.
-	 */
+	// /** 
+	//  * Sets current value. 
+	//  * 
+	//  * @param {number} n - Current value.
+	//  */
+
 	Plugin.prototype.setValue = function (n) {
 		
 		this.textfield.val(n);
@@ -114,11 +115,12 @@
 		this.updateDisplay(n); // update display
 	};
 	
-	/** 
-	 * Updates display. 
-	 * 
-	 * @param {number} n - Current value.
-	 */
+	// /** 
+	//  * Updates display. 
+	//  * 
+	//  * @param {number} n - Current value.
+	//  */
+
 	Plugin.prototype.updateDisplay = function (n) {
 		
 		var percent; 
@@ -154,13 +156,14 @@
 		
 	};
 	
-	/** 
-	 * Mousemove event handler. 
-	 * 
-	 * @param {object} event - Keyboard event.
-	 * @param {object} event.data - Event data.
-	 * @param {object} event.data.plugin - Reference to plugin.
-	 */
+	// /** 
+	//  * Mousemove event handler. 
+	//  * 
+	//  * @param {object} event - Keyboard event.
+	//  * @param {object} event.data - Event data.
+	//  * @param {object} event.data.plugin - Reference to plugin.
+	//  */
+
 	Plugin.prototype.onMouseMove = function (event) {
 		
 		var $elem, plugin, $parent, min, max, step, value, percent, diff, mod, test;
@@ -193,20 +196,14 @@
 		
 	};
 
-	/**
-* Keyboard event handler.
-*
-* @param {object} event - Keyboard event.
-* @param {object} event.data - Event data.
-* @param {object} event.data.plugin - Reference to plugin.
-*/
-	/**
-	* Keyboard event handler.
-	*
-	* @param {object} event - Keyboard event.
-	* @param {object} event.data - Event data.
-	* @param {object} event.data.plugin - Reference to plugin.
-	*/
+	// /**
+	// * Keyboard event handler.
+	// *
+	// * @param {object} event - Keyboard event.
+	// * @param {object} event.data - Event data.
+	// * @param {object} event.data.plugin - Reference to plugin.
+	// */
+
 	Plugin.prototype.onKeyDown = function (event) {
 
 		var $elem, plugin, value;
@@ -242,13 +239,13 @@
 
 	};
 	
-	/** 
-	 * Mouseup event handler.
-	 * 
-	 * @param {object} event - Keyboard event.
-	 * @param {object} event.data - Event data.
-	 * @param {object} event.data.plugin - Reference to plugin.
-	 */
+	// /** 
+	//  * Mouseup event handler.
+	//  * 
+	//  * @param {object} event - Keyboard event.
+	//  * @param {object} event.data - Event data.
+	//  * @param {object} event.data.plugin - Reference to plugin.
+	//  */
 	Plugin.prototype.onMouseUp = function (event) {
 		
 		var plugin = event.data.plugin;
