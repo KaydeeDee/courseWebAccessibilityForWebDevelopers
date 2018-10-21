@@ -44,11 +44,11 @@ $(document).ready(function () {
 
 		$elem.attr({ 'aria-multiselectable': !this.options.autoCollapse }); // define if more than one panel can be expanded
 
-		this.headers = $elem.children('dt')
-			.attr({ 'role': 'heading' }); // set heading role for each accordion header
-
 		this.headers = $elem.children('dt').each(function (i, el) {
 			var $me, $btn;
+
+			this.headers = $elem.children('dt')
+				.attr({ 'role': 'heading' }); // set heading role for each accordion header
 
 			$me = $(el);
 			$btn = $('<div/>').attr({
@@ -76,51 +76,6 @@ $(document).ready(function () {
 			});
 		}).hide();
 
-	};
-
-	// /**
-    //  * Handles kedown event on header button.
-    //  *
-    //  * @param {Object} event - Keyboard event.
-    //  * @param {object} event.data - Event data.
-    //  * @param {object} event.data.plugin - Reference to plugin.
-    //  */
-	Plugin.prototype.onKeyDown = function (event) {
-
-		var $me, $header, plugin, $elem, $current, ind;
-
-		$me = $(event.target);
-		$header = $me.parent('dt');
-		plugin = event.data.plugin;
-		$elem = $(plugin.element);
-
-		switch (event.keyCode) {
-
-			// toggle panel by pressing enter key, or spacebar
-			case ik_utils.keys.enter:
-			case ik_utils.keys.space:
-				event.preventDefault();
-				event.stopPropagation();
-				plugin.togglePanel(event);
-				break;
-
-			// use up arrow to jump to the previous header
-			case ik_utils.keys.up:
-				ind = plugin.headers.index($header);
-				if (ind > 0) {
-					plugin.headers.eq(--ind).find('.button').focus();
-				}
-				console.log(ind);
-				break;
-
-			// use down arrow to jump to the next header
-			case ik_utils.keys.down:
-				ind = plugin.headers.index($header);
-				if (ind < plugin.headers.length - 1) {
-					plugin.headers.eq(++ind).find('.button').focus();
-				}
-				break;
-		}
 	};
 
 	// /** 
@@ -176,5 +131,50 @@ $(document).ready(function () {
 		});
 
 	}
+
+	// /**
+    //  * Handles kedown event on header button.
+    //  *
+    //  * @param {Object} event - Keyboard event.
+    //  * @param {object} event.data - Event data.
+    //  * @param {object} event.data.plugin - Reference to plugin.
+    //  */
+	Plugin.prototype.onKeyDown = function (event) {
+
+		var $me, $header, plugin, $elem, $current, ind;
+
+		$me = $(event.target);
+		$header = $me.parent('dt');
+		plugin = event.data.plugin;
+		$elem = $(plugin.element);
+
+		switch (event.keyCode) {
+
+			// toggle panel by pressing enter key, or spacebar
+			case ik_utils.keys.enter:
+			case ik_utils.keys.space:
+				event.preventDefault();
+				event.stopPropagation();
+				plugin.togglePanel(event);
+				break;
+
+			// use up arrow to jump to the previous header
+			case ik_utils.keys.up:
+				ind = plugin.headers.index($header);
+				if (ind > 0) {
+					plugin.headers.eq(--ind).find('.button').focus();
+				}
+				console.log(ind);
+				break;
+
+			// use down arrow to jump to the next header
+			case ik_utils.keys.down:
+				ind = plugin.headers.index($header);
+				if (ind < plugin.headers.length - 1) {
+					plugin.headers.eq(++ind).find('.button').focus();
+				}
+				break;
+		}
+	};
 
 })(jQuery, window, document);
